@@ -1,7 +1,8 @@
-
+%第一个模块
 clear;
 clc;
 %%
+%第二个模块
 nm = 1e-9;
 lamda = 627*nm;
 %高度要注意调节，越高则倏逝波越小
@@ -157,6 +158,7 @@ for ampz = (0:0.025:0.5)*2*2
 end
 
 %%
+%第三个模块
 imagesc(kx/k0,ky/k0,nIrp+nIlp-nI);title('Irp')
 colorbar
 axis xy
