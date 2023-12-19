@@ -1,0 +1,53 @@
+clear;
+nm = 1e-9;
+lamda = 633*nm;
+k0 = 2*pi/lamda;
+
+k1x = k0*(-0.499);
+k1y = k0*(-0.388);
+k2x = k0*(0.499);
+k2y = k0*(-0.388);
+p1 = [k1x;k1y;-sqrt(k0^2-k1x^2-k1y^2)];
+p2 = [k2x;k2y;-sqrt(k0^2-k2x^2-k2y^2)];
+figure(1)
+quiver3(0,0,0,p1(1),p1(2),p1(3),0,'Color','r','LineWidth',3);
+hold on
+quiver3(0,0,0,p2(1),p2(2),p2(3),0,'Color','b','LineWidth',5);
+hold off
+axis xy
+xlabel('x')
+ylabel('y')
+
+phi1 = atan2(p1(2),p1(1));
+costhe = sqrt(1-(p1(1)^2+p1(2)^2)/k0^2);
+Rzp = [cos(phi1),sin(phi1),0;-sin(phi1),cos(phi1),0;0,0,1];
+Ryt = [costhe,0,sqrt(1-costhe^2);0,1,0;-sqrt(1-costhe^2),0,costhe];
+
+p11 = mtimes(Rzp,p1);
+p12 = mtimes(Ryt,p11);
+p21 = mtimes(Rzp,p2);
+p22 = mtimes(Ryt,p21);
+figure(2)
+quiver3(0,0,0,p12(1),p12(2),p12(3),0,'Color','r','LineWidth',3);
+hold on
+quiver3(0,0,0,p22(1),p22(2),p22(3),0,'Color','b','LineWidth',5);
+axis xy
+xlabel('x')
+ylabel('y')
+
+%防止计算出现的近似零的小数两两出现，导致不能够按照作为零来处理
+for i = 1:1:3
+    commax = max(p22);
+    if abs(p22(i)/commax)<=1e-10
+        p22(i) = 0;
+    end
+end
+the2 = acos(abs(p22(3))/k0);
+phi2 = atan2(p22(2),p22(1));
+%这里问题很大
+Ex2 = cos(phi2)*(1j) - sin(phi2)*(1);
+Ey2 = sin(phi2)*(1j) + cos(phi2)*(1);
+Ez2 = tan(the2/2)*(1j);
+
+E2 = [Ex2;Ey2;Ez2];
+E = transpose(Rzp)*transpose(Ryt)*E2
